@@ -16,9 +16,14 @@ namespace WifiHotspot
         public string SsidName { get; set; } = "";
         public string Password { get; set; } = "";
         public HotspotStatus Status { get; protected set; } = HotspotStatus.Initializing;
-        public event EventHandler<HotspotStatusEventArgs> StatusChanged;
+        public int ClientsConnected { get; protected set; } = 0;
+        public event EventHandler<HotspotStatus> StatusChanged;
+        public event EventHandler<int> ClientsConnectedChanged;
 
         protected Cli cli;
+        protected Dictionary<string, string> properties = new Dictionary<string, string>();
+        protected Dictionary<string, string> securityProperties = new Dictionary<string, string>();
+
         protected readonly Dictionary<string, HotspotStatus> statusMapping = new Dictionary<string, HotspotStatus>
         {
             {"Not started",    HotspotStatus.Stopped},
@@ -35,17 +40,28 @@ namespace WifiHotspot
         {
             ChangeStatus(HotspotStatus.Initializing);
 
-            ExecutionOutput infoOutput = await cli.ExecuteAsync("wlan show hostednetwork");
-            Dictionary<string, string> hotspotInfo = ParseSettings(infoOutput.StandardOutput);
-            if (hotspotInfo.ContainsKey("SSID name"))
-                SsidName = hotspotInfo["SSID name"];
+            await UpdateProperties();
+            if (properties.ContainsKey("SSID name"))
+                SsidName = properties["SSID name"];
 
-            ExecutionOutput securityOutput = await cli.ExecuteAsync("wlan show hostednetwork setting=security");
-            Dictionary<string, string> securityInfo = ParseSettings(securityOutput.StandardOutput);
-            if (securityInfo.ContainsKey("User security key"))
-                Password = securityInfo["User security key"];
+            await UpdateSecurityProperties();
+            if (securityProperties.ContainsKey("User security key"))
+                Password = securityProperties["User security key"];
 
             UpdateStatus();
+            UpdateNumberOfClients();
+        }
+
+        protected async virtual Task UpdateProperties()
+        {
+            ExecutionOutput infoOutput = await cli.ExecuteAsync("wlan show hostednetwork");
+            properties = ParseSettings(infoOutput.StandardOutput);
+        }
+
+        protected async virtual Task UpdateSecurityProperties()
+        {
+            ExecutionOutput securityOutput = await cli.ExecuteAsync("wlan show hostednetwork setting=security");
+            securityProperties = ParseSettings(securityOutput.StandardOutput);
         }
 
         public async Task Start()
@@ -95,25 +111,34 @@ namespace WifiHotspot
 
         public async Task CheckConnection()
         {
-            HotspotStatus status = await GetStatus();
-            if (this.Status == HotspotStatus.NotAvailable && status != HotspotStatus.NotAvailable)
+            await UpdateProperties();
+            HotspotStatus status = GetStatus();
+            if (this.Status == HotspotStatus.NotAvailable || status == HotspotStatus.NotAvailable)
                 ChangeStatus(status);
-            if (status == HotspotStatus.NotAvailable && this.Status != HotspotStatus.NotAvailable)
-                ChangeStatus(status);
+            UpdateNumberOfClients();
+        }
+
+        protected virtual void UpdateNumberOfClients()
+        {
+            if (properties.ContainsKey("Number of clients"))
+            {
+                int clientsConnected = int.Parse(properties["Number of clients"].Trim());
+                ChangeClientsConnected(clientsConnected);
+            }
+            else
+                ChangeClientsConnected(0);
         }
 
         protected async virtual void UpdateStatus()
         {
-            HotspotStatus status = await GetStatus();
-            if (Status != status)
-                ChangeStatus(status);
+            await UpdateProperties();
+            HotspotStatus status = GetStatus();
+            ChangeStatus(status);
         }
 
-        protected async virtual Task<HotspotStatus> GetStatus()
+        protected virtual HotspotStatus GetStatus()
         {
-            ExecutionOutput infoResult = await cli.ExecuteAsync("wlan show hostednetwork");
-            Dictionary<string, string> hotspotInfo = ParseSettings(infoResult.StandardOutput);
-            string name = hotspotInfo["Status"];
+            string name = properties["Status"];
             HotspotStatus status = HotspotStatus.Unknown;
             if (statusMapping.ContainsKey(name))
                 status = statusMapping[name];
@@ -122,22 +147,25 @@ namespace WifiHotspot
 
         protected virtual void ChangeStatus(HotspotStatus newStatus)
         {
-            Status = newStatus;
-            StatusChanged?.Invoke(this, new HotspotStatusEventArgs(newStatus));
+            if (Status != newStatus)
+            {
+                Status = newStatus;
+                StatusChanged?.Invoke(this, newStatus);
+            }
+        }
+
+        protected virtual void ChangeClientsConnected(int clients)
+        {
+            if (ClientsConnected != clients)
+            {
+                ClientsConnected = clients;
+                ClientsConnectedChanged?.Invoke(this, clients);
+            }
         }
 
         public void Dispose()
         {
             cli.Dispose();
-        }
-
-        public class HotspotStatusEventArgs : EventArgs
-        {
-            public HotspotStatus Status { get; protected set; }
-            public HotspotStatusEventArgs(HotspotStatus status)
-            {
-                Status = status;
-            }
         }
     }
 }

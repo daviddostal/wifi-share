@@ -25,32 +25,38 @@ namespace WifiShare
         {
             hotspot = new Hotspot();
             hotspot.StatusChanged += Hotspot_StatusChanged;
+            hotspot.ClientsConnectedChanged += Hotspot_ClientsConnectedChanged;
             await hotspot.Initialize();
             hotspotNameTbx.Text = hotspot.SsidName;
             hotspotPasswordTbx.Text = hotspot.Password;
             updateClientsTimer.Start();
         }
 
-        private void Hotspot_StatusChanged(object sender, Hotspot.HotspotStatusEventArgs e)
+        private void Hotspot_ClientsConnectedChanged(object sender, int clients)
         {
-            statusTsL.Text = $"Status: {e.Status.GetDescription().ToLower()}";
-            stopHotspotBtn.Enabled = e.Status == HotspotStatus.Running;
-            startHotspotBtn.Enabled = e.Status == HotspotStatus.Stopped;
+            clientsTsL.Text = $"Clients: {clients}";
         }
 
-        private async void startHotspotBtn_Click(object sender, EventArgs e)
+        private void Hotspot_StatusChanged(object sender, HotspotStatus newStatus)
+        {
+            statusTsL.Text = $"Status: {newStatus.GetDescription().ToLower()}";
+            stopHotspotBtn.Enabled = newStatus == HotspotStatus.Running;
+            startHotspotBtn.Enabled = newStatus == HotspotStatus.Stopped;
+        }
+
+        private async void StartHotspotBtn_Click(object sender, EventArgs e)
         {
             hotspot.SsidName = hotspotNameTbx.Text;
             hotspot.Password = hotspotPasswordTbx.Text;
             await hotspot.Start();
         }
 
-        private async void stopHotspotBtn_Click(object sender, EventArgs e)
+        private async void StopHotspotBtn_Click(object sender, EventArgs e)
         {
             await hotspot.Stop();
         }
 
-        private async void updateClientsTimer_Tick(object sender, EventArgs e)
+        private async void UpdateClientsTimer_Tick(object sender, EventArgs e)
         {
             await hotspot.CheckConnection();
         }

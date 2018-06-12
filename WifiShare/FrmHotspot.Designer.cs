@@ -108,7 +108,7 @@
             this.startHotspotBtn.TabIndex = 0;
             this.startHotspotBtn.Text = "&Start";
             this.startHotspotBtn.UseVisualStyleBackColor = true;
-            this.startHotspotBtn.Click += new System.EventHandler(this.startHotspotBtn_Click);
+            this.startHotspotBtn.Click += new System.EventHandler(this.StartHotspotBtn_Click);
             // 
             // stopHotspotBtn
             // 
@@ -121,7 +121,7 @@
             this.stopHotspotBtn.TabIndex = 1;
             this.stopHotspotBtn.Text = "S&top";
             this.stopHotspotBtn.UseVisualStyleBackColor = true;
-            this.stopHotspotBtn.Click += new System.EventHandler(this.stopHotspotBtn_Click);
+            this.stopHotspotBtn.Click += new System.EventHandler(this.StopHotspotBtn_Click);
             // 
             // statusStrip1
             // 
@@ -157,7 +157,7 @@
             // updateClientsTimer
             // 
             this.updateClientsTimer.Interval = 1500;
-            this.updateClientsTimer.Tick += new System.EventHandler(this.updateClientsTimer_Tick);
+            this.updateClientsTimer.Tick += new System.EventHandler(this.UpdateClientsTimer_Tick);
             // 
             // FrmHotspot
             // 
