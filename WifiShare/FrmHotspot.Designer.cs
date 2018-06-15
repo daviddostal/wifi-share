@@ -164,7 +164,7 @@
             this.AcceptButton = this.startHotspotBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
+            this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(258, 179);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.hotspotActionsTlp);
