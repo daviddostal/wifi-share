@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Diagnostics;
 using WifiHotspot;
-using static WifiShare.Utilities.StringUtils;
 
 namespace WifiShare
 {
@@ -38,9 +29,7 @@ namespace WifiShare
         }
 
         private void Hotspot_ClientsConnectedChanged(object sender, int clients)
-        {
-            clientsTsL.Text = $"Clients: {clients}";
-        }
+            => clientsTsL.Text = $"Clients: {clients}";
 
         private void Hotspot_StatusChanged(object sender, HotspotStatus newStatus)
         {
@@ -53,12 +42,14 @@ namespace WifiShare
         {
             _hotspot.SsidName = hotspotNameTbx.Text;
             _hotspot.Password = hotspotPasswordTbx.Text;
-            await _hotspot.Start();
+            try { await _hotspot.Start(); }
+            catch(HotspotException) { MessageBox.Show(this, "Couldn't succesfully start the hotspot.", "Error starting hotspot", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         private async void StopHotspotBtn_Click(object sender, EventArgs e)
         {
-            await _hotspot.Stop();
+            try { await _hotspot.Stop(); }
+            catch(HotspotException) { MessageBox.Show(this, "Couldn't succesfully stop the hotspot.", "Error stopping hotspot", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
     }
 }

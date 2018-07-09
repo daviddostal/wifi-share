@@ -45,7 +45,7 @@ namespace WifiHotspot
             await Task.Run(() =>
             {
                 try { _hostedNetwork.Start(); }
-                catch (Win32Exception ex) { throw new InvalidOperationException("Couldn't start hosted network", ex); }
+                catch (Win32Exception ex) { throw new HotspotException("Couldn't start hosted network", ex); }
             });
         }
 
@@ -54,7 +54,7 @@ namespace WifiHotspot
             await Task.Run(() =>
             {
                 try { _hostedNetwork.Stop(); }
-                catch (Win32Exception ex) { throw new InvalidOperationException("Couldn't stop hosted network", ex); }
+                catch (Win32Exception ex) { throw new HotspotException("Couldn't stop hosted network", ex); }
             });
         }
 

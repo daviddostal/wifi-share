@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HotspotException.cs" />
     <Compile Include="HotspotStatus.cs" />
     <Compile Include="IHotspot.cs" />
     <Compile Include="Hotspot.cs" />
