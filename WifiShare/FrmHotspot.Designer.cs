@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.hotspotNameTbx = new System.Windows.Forms.TextBox();
             this.hotspotPasswordTbx = new System.Windows.Forms.TextBox();
             this.hotspotNameLbl = new System.Windows.Forms.Label();
@@ -167,12 +166,14 @@
             this.Controls.Add(this.hotspotPasswordTbx);
             this.Controls.Add(this.hotspotNameTbx);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.HelpButton = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FrmHotspot";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "WifiShare";
+            this.HelpButtonClicked += new System.ComponentModel.CancelEventHandler(this.FrmHotspot_HelpButtonClicked);
             this.hotspotActionsTlp.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

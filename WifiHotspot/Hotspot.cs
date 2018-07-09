@@ -20,7 +20,7 @@ namespace WifiHotspot
             set => _hostedNetwork.SecondaryKey = new WlanHostedNetwork.Key(value, true);
         }
         public HotspotStatus Status => GetStatus();
-        public int ClientsConnected => _hostedNetwork.Peers.Length;
+        public int ClientCount => _hostedNetwork.Peers.Length;
         public bool IsSupported => _hostedNetwork.Enabled;
 
         public event EventHandler<HotspotStatus> StatusChanged;
@@ -37,7 +37,6 @@ namespace WifiHotspot
             _hostedNetwork.HnwkStateChange += (s, e) => OnStatusChanged();
             _hostedNetwork.HnwkRadioStateChange += (s, e) => OnStatusChanged();
             _hostedNetwork.HnwkPeerStateChange += (s, e) => OnClientCountChanged();
-            OnStatusChanged();
         }
 
         public async Task Start()
@@ -79,6 +78,6 @@ namespace WifiHotspot
 
         protected virtual void OnClientCountChanged()
             => _context.Send(new SendOrPostCallback((state)
-                => ClientsConnectedChanged?.Invoke(this, ClientsConnected)), null);
+                => ClientsConnectedChanged?.Invoke(this, ClientCount)), null);
     }
 }

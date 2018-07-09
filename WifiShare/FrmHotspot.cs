@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using WifiHotspot;
+using System.ComponentModel;
 
 namespace WifiShare
 {
@@ -22,20 +23,21 @@ namespace WifiShare
                 MessageBox.Show(this, $"Wireless hotspots are not supported by your system or network card.", "Not supported", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Load += (s, e) => Close();
             }
-            _hotspot.StatusChanged += Hotspot_StatusChanged;
-            _hotspot.ClientsConnectedChanged += Hotspot_ClientsConnectedChanged;
+            _hotspot.StatusChanged += (s, e) => UpdateStatus();
+            _hotspot.ClientsConnectedChanged += (s, e) => UpdateClientCount();
             hotspotNameTbx.Text = _hotspot.SsidName;
             hotspotPasswordTbx.Text = _hotspot.Password;
+            UpdateStatus();
         }
 
-        private void Hotspot_ClientsConnectedChanged(object sender, int clients)
-            => clientsTsL.Text = $"Clients: {clients}";
+        private void UpdateClientCount()
+            => clientsTsL.Text = $"Clients: {_hotspot.ClientCount}";
 
-        private void Hotspot_StatusChanged(object sender, HotspotStatus newStatus)
+        private void UpdateStatus()
         {
-            statusTsL.Text = $"Status: {newStatus.GetDescription().ToLower()}";
-            stopHotspotBtn.Enabled = newStatus == HotspotStatus.Running;
-            startHotspotBtn.Enabled = newStatus == HotspotStatus.Stopped;
+            statusTsL.Text = $"Status: {_hotspot.Status.GetDescription().ToLower()}";
+            stopHotspotBtn.Enabled = _hotspot.Status == HotspotStatus.Running;
+            startHotspotBtn.Enabled = _hotspot.Status == HotspotStatus.Stopped;
         }
 
         private async void StartHotspotBtn_Click(object sender, EventArgs e)
@@ -50,6 +52,12 @@ namespace WifiShare
         {
             try { await _hotspot.Stop(); }
             catch(HotspotException) { MessageBox.Show(this, "Couldn't succesfully stop the hotspot.", "Error stopping hotspot", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+
+        private void FrmHotspot_HelpButtonClicked(object sender, CancelEventArgs e)
+        { 
+            new AboutDialog().ShowDialog(this);
+            e.Cancel = true;
         }
     }
 }

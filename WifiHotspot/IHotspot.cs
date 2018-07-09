@@ -8,7 +8,7 @@ namespace WifiHotspot
         string SsidName { get; set; }
         string Password { get; set; }
         HotspotStatus Status { get; }
-        int ClientsConnected { get; }
+        int ClientCount { get; }
         bool IsSupported { get; }
 
         event EventHandler<HotspotStatus> StatusChanged;
