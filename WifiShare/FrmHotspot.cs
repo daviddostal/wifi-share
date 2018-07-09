@@ -9,25 +9,32 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using WifiHotspot;
+using static WifiShare.Utilities.StringUtils;
 
 namespace WifiShare
 {
     public partial class FrmHotspot : Form
     {
-        private IHotspot hotspot;
+        private IHotspot _hotspot;
+
         public FrmHotspot()
         {
             InitializeComponent();
             Initialize();
         }
 
-        private async void Initialize()
+        private void Initialize()
         {
-            hotspot = new Hotspot();
-            hotspot.StatusChanged += Hotspot_StatusChanged;
-            hotspot.ClientsConnectedChanged += Hotspot_ClientsConnectedChanged;
-            hotspotNameTbx.Text = hotspot.SsidName;
-            hotspotPasswordTbx.Text = hotspot.Password;
+            _hotspot = new Hotspot();
+            if (!_hotspot.IsSupported)
+            {
+                MessageBox.Show(this, $"Wireless hotspots are not supported by your system or network card.", "Not supported", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Load += (s, e) => Close();
+            }
+            _hotspot.StatusChanged += Hotspot_StatusChanged;
+            _hotspot.ClientsConnectedChanged += Hotspot_ClientsConnectedChanged;
+            hotspotNameTbx.Text = _hotspot.SsidName;
+            hotspotPasswordTbx.Text = _hotspot.Password;
         }
 
         private void Hotspot_ClientsConnectedChanged(object sender, int clients)
@@ -44,14 +51,14 @@ namespace WifiShare
 
         private async void StartHotspotBtn_Click(object sender, EventArgs e)
         {
-            hotspot.SsidName = hotspotNameTbx.Text;
-            hotspot.Password = hotspotPasswordTbx.Text;
-            await hotspot.Start();
+            _hotspot.SsidName = hotspotNameTbx.Text;
+            _hotspot.Password = hotspotPasswordTbx.Text;
+            await _hotspot.Start();
         }
 
         private async void StopHotspotBtn_Click(object sender, EventArgs e)
         {
-            await hotspot.Stop();
+            await _hotspot.Stop();
         }
     }
 }
