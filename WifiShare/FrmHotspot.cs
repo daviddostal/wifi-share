@@ -23,10 +23,9 @@ namespace WifiShare
 
         private async void Initialize()
         {
-            hotspot = new NativeHotspot();
+            hotspot = new Hotspot();
             hotspot.StatusChanged += Hotspot_StatusChanged;
             hotspot.ClientsConnectedChanged += Hotspot_ClientsConnectedChanged;
-            await hotspot.Initialize();
             hotspotNameTbx.Text = hotspot.SsidName;
             hotspotPasswordTbx.Text = hotspot.Password;
         }

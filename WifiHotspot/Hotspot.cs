@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WifiHotspot
 {
-    public class NativeHotspot : IHotspot
+    public class Hotspot : IHotspot
     {
         public string SsidName
         {
@@ -29,7 +29,7 @@ namespace WifiHotspot
         protected WlanHostedNetwork _hostedNetwork;
         protected SynchronizationContext _context;
 
-        public NativeHotspot()
+        public Hotspot()
         {
             _context = SynchronizationContext.Current;
             WlanClient client = WlanClient.CreateClient();
@@ -37,6 +37,7 @@ namespace WifiHotspot
             _hostedNetwork.HnwkStateChange += (s, e) => OnStatusChanged();
             _hostedNetwork.HnwkRadioStateChange += (s, e) => OnStatusChanged();
             _hostedNetwork.HnwkPeerStateChange += (s, e) => OnClientCountChanged();
+            OnStatusChanged();
         }
 
         public async Task Start()
@@ -55,12 +56,6 @@ namespace WifiHotspot
                 try { _hostedNetwork.Stop(); }
                 catch (Win32Exception ex) { throw new InvalidOperationException("Couldn't stop hosted network", ex); }
             });
-        }
-
-        public async Task Initialize()
-        {
-            await Task.Run(() => { });
-            OnStatusChanged();
         }
 
         protected virtual HotspotStatus GetStatus()

@@ -14,7 +14,6 @@ namespace WifiHotspot
         event EventHandler<HotspotStatus> StatusChanged;
         event EventHandler<int> ClientsConnectedChanged;
 
-        Task Initialize();
         Task Start();
         Task Stop();
     }
