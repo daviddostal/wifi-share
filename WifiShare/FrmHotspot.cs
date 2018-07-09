@@ -14,7 +14,7 @@ namespace WifiShare
 {
     public partial class FrmHotspot : Form
     {
-        private CmdHotspot hotspot;
+        private IHotspot hotspot;
         public FrmHotspot()
         {
             InitializeComponent();
@@ -23,13 +23,12 @@ namespace WifiShare
 
         private async void Initialize()
         {
-            hotspot = new CmdHotspot();
+            hotspot = new NativeHotspot();
             hotspot.StatusChanged += Hotspot_StatusChanged;
             hotspot.ClientsConnectedChanged += Hotspot_ClientsConnectedChanged;
             await hotspot.Initialize();
             hotspotNameTbx.Text = hotspot.SsidName;
             hotspotPasswordTbx.Text = hotspot.Password;
-            updateClientsTimer.Start();
         }
 
         private void Hotspot_ClientsConnectedChanged(object sender, int clients)
@@ -54,11 +53,6 @@ namespace WifiShare
         private async void StopHotspotBtn_Click(object sender, EventArgs e)
         {
             await hotspot.Stop();
-        }
-
-        private async void UpdateClientsTimer_Tick(object sender, EventArgs e)
-        {
-            await hotspot.CheckConnection();
         }
     }
 }

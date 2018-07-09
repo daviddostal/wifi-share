@@ -1,39 +1,89 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EugenPechanec.NativeWifi;
 using EugenPechanec.NativeWifi.Wlan;
+using System;
+using System.ComponentModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace WifiHotspot
 {
     public class NativeHotspot : IHotspot
     {
-        public string SsidName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Password { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public HotspotStatus Status => throw new NotImplementedException();
-        public int ClientsConnected => throw new NotImplementedException();
-        public bool IsSupported => throw new NotImplementedException();
+        public string SsidName
+        {
+            get => _hostedNetwork.Ssid.Ssid;
+            set => _hostedNetwork.Ssid = new Dot11Ssid(value);
+        }
+        public string Password
+        {
+            get => _hostedNetwork.SecondaryKey.Data.ToString();
+            set => _hostedNetwork.SecondaryKey = new WlanHostedNetwork.Key(value, true);
+        }
+        public HotspotStatus Status => GetStatus();
+        public int ClientsConnected => _hostedNetwork.Peers.Length;
+        public bool IsSupported => _hostedNetwork.Enabled;
 
         public event EventHandler<HotspotStatus> StatusChanged;
         public event EventHandler<int> ClientsConnectedChanged;
 
         protected WlanHostedNetwork _hostedNetwork;
+        protected SynchronizationContext _context;
 
         public NativeHotspot()
         {
+            _context = SynchronizationContext.Current;
             WlanClient client = WlanClient.CreateClient();
             _hostedNetwork = client.HostedNetwork;
+            _hostedNetwork.HnwkStateChange += (s, e) => OnStatusChanged();
+            _hostedNetwork.HnwkRadioStateChange += (s, e) => OnStatusChanged();
+            _hostedNetwork.HnwkPeerStateChange += (s, e) => OnClientCountChanged();
         }
 
-        public Task Start()
+        public async Task Start()
         {
-            throw new NotImplementedException();
+            await Task.Run(() =>
+            {
+                try { _hostedNetwork.Start(); }
+                catch (Win32Exception ex) { throw new InvalidOperationException("Couldn't start hosted network", ex); }
+            });
         }
 
-        public Task Stop()
+        public async Task Stop()
         {
-            throw new NotImplementedException();
+            await Task.Run(() =>
+            {
+                try { _hostedNetwork.Stop(); }
+                catch (Win32Exception ex) { throw new InvalidOperationException("Couldn't stop hosted network", ex); }
+            });
         }
+
+        public async Task Initialize()
+        {
+            await Task.Run(() => { });
+            OnStatusChanged();
+        }
+
+        protected virtual HotspotStatus GetStatus()
+        {
+            switch (_hostedNetwork.State)
+            {
+                case WlanHostedNetworkState.Unavailable:
+                    return HotspotStatus.NotAvailable;
+                case WlanHostedNetworkState.Idle:
+                    return HotspotStatus.Stopped;
+                case WlanHostedNetworkState.Active:
+                    return HotspotStatus.Running;
+                default:
+                    return HotspotStatus.Unknown;
+            }
+        }
+
+        protected virtual void OnStatusChanged()
+            => _context.Send(new SendOrPostCallback((state)
+                => StatusChanged?.Invoke(this, Status)), null);
+
+        protected virtual void OnClientCountChanged()
+            => _context.Send(new SendOrPostCallback((state)
+                => ClientsConnectedChanged?.Invoke(this, ClientsConnected)), null);
     }
 }

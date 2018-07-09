@@ -39,7 +39,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.clientsTsL = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusTsL = new System.Windows.Forms.ToolStripStatusLabel();
-            this.updateClientsTimer = new System.Windows.Forms.Timer(this.components);
             this.hotspotActionsTlp.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -154,11 +153,6 @@
             this.statusTsL.Size = new System.Drawing.Size(116, 19);
             this.statusTsL.Text = "Status: initializing...";
             // 
-            // updateClientsTimer
-            // 
-            this.updateClientsTimer.Interval = 1500;
-            this.updateClientsTimer.Tick += new System.EventHandler(this.UpdateClientsTimer_Tick);
-            // 
             // FrmHotspot
             // 
             this.AcceptButton = this.startHotspotBtn;
@@ -199,7 +193,6 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel clientsTsL;
         private System.Windows.Forms.ToolStripStatusLabel statusTsL;
-        private System.Windows.Forms.Timer updateClientsTimer;
     }
 }
 
