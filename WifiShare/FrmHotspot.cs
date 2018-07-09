@@ -14,7 +14,7 @@ namespace WifiShare
 {
     public partial class FrmHotspot : Form
     {
-        private Hotspot hotspot;
+        private CmdHotspot hotspot;
         public FrmHotspot()
         {
             InitializeComponent();
@@ -23,7 +23,7 @@ namespace WifiShare
 
         private async void Initialize()
         {
-            hotspot = new Hotspot();
+            hotspot = new CmdHotspot();
             hotspot.StatusChanged += Hotspot_StatusChanged;
             hotspot.ClientsConnectedChanged += Hotspot_ClientsConnectedChanged;
             await hotspot.Initialize();

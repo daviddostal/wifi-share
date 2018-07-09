@@ -11,12 +11,13 @@ using System.Timers;
 
 namespace WifiHotspot
 {
-    public class Hotspot : IDisposable
+    public class CmdHotspot : IHotspot, IDisposable
     {
         public string SsidName { get; set; } = "";
         public string Password { get; set; } = "";
         public HotspotStatus Status { get; protected set; } = HotspotStatus.Initializing;
         public int ClientsConnected { get; protected set; } = 0;
+        public bool IsSupported => throw new NotImplementedException();
         public event EventHandler<HotspotStatus> StatusChanged;
         public event EventHandler<int> ClientsConnectedChanged;
 
@@ -31,7 +32,7 @@ namespace WifiHotspot
             {"Not available",  HotspotStatus.NotAvailable}
         };
 
-        public Hotspot()
+        public CmdHotspot()
         {
             cli = new Cli("netsh");
         }
@@ -87,9 +88,13 @@ namespace WifiHotspot
             UpdateStatus();
         }
 
-        public bool IsSupported()
+        public async Task CheckConnection()
         {
-            throw new NotImplementedException();
+            await UpdateProperties();
+            HotspotStatus status = GetStatus();
+            if (this.Status == HotspotStatus.NotAvailable || status == HotspotStatus.NotAvailable)
+                ChangeStatus(status);
+            UpdateNumberOfClients();
         }
 
         private Dictionary<string, string> ParseSettings(string settings)
@@ -107,15 +112,6 @@ namespace WifiHotspot
                 values.Add(name, value);
             }
             return values;
-        }
-
-        public async Task CheckConnection()
-        {
-            await UpdateProperties();
-            HotspotStatus status = GetStatus();
-            if (this.Status == HotspotStatus.NotAvailable || status == HotspotStatus.NotAvailable)
-                ChangeStatus(status);
-            UpdateNumberOfClients();
         }
 
         protected virtual void UpdateNumberOfClients()
