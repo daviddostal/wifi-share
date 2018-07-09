@@ -41,19 +41,19 @@ namespace WifiHotspot
 
         public async Task Start()
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 try { _hostedNetwork.Start(); }
-                catch (Win32Exception ex) { throw new HotspotException("Couldn't start hosted network", ex); }
+                catch (Win32Exception ex) { await Task.FromException(new HotspotException("Couldn't start hosted network", ex)); }
             });
         }
 
         public async Task Stop()
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 try { _hostedNetwork.Stop(); }
-                catch (Win32Exception ex) { throw new HotspotException("Couldn't stop hosted network", ex); }
+                catch (Win32Exception ex) { await Task.FromException(new HotspotException("Couldn't stop hosted network", ex)); }
             });
         }
 

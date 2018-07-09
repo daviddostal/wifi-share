@@ -16,23 +16,11 @@ namespace WifiHotspot
         [Description("Stopped")]
         Stopped,
 
-        [Description("Starting...")]
-        Starting,
-
-        [Description("Stopping...")]
-        Stopping,
-
         [Description("Not available")]
         NotAvailable,
 
         [Description("Unknown")]
         Unknown,
-
-        [Description("Initializing...")]
-        Initializing,
-
-        [Description("Creating hotspot...")]
-        CreatingHotspot
     }
 
     public static class EnumExtensions
