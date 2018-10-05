@@ -14,6 +14,7 @@ namespace WifiHotspot
             get => _hostedNetwork.Ssid.Ssid;
             set => _hostedNetwork.Ssid = new Dot11Ssid(value);
         }
+
         public string Password
         {
             get => _hostedNetwork.SecondaryKey.Data.ToString();
