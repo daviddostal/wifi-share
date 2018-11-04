@@ -21,13 +21,13 @@ namespace WifiShare
 
         private void GithubLinkLabelClick(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("https://github.com/david-dostal/wifi-share");
+            Process.Start("https://github.com/daviddostal/wifi-share");
             githubLinkLabel.LinkVisited = true;
         }
 
         private void licenseLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("https://github.com/david-dostal/wifi-share/blob/master/LICENSE");
+            Process.Start("https://github.com/daviddostal/wifi-share/blob/master/LICENSE");
             licenseLinkLabel.LinkVisited = true;
         }
     }

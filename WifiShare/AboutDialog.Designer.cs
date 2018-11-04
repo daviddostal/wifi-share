@@ -109,10 +109,10 @@
             this.githubLinkLabel.AutoSize = true;
             this.githubLinkLabel.Location = new System.Drawing.Point(76, 62);
             this.githubLinkLabel.Name = "githubLinkLabel";
-            this.githubLinkLabel.Size = new System.Drawing.Size(206, 13);
+            this.githubLinkLabel.Size = new System.Drawing.Size(203, 13);
             this.githubLinkLabel.TabIndex = 6;
             this.githubLinkLabel.TabStop = true;
-            this.githubLinkLabel.Text = "https://github.com/david-dostal/wifi-share";
+            this.githubLinkLabel.Text = "https://github.com/daviddostal/wifi-share";
             this.githubLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.GithubLinkLabelClick);
             // 
             // tableLayoutPanel1
